@@ -1,0 +1,2 @@
+# stereo-thermal
+Capstone Project

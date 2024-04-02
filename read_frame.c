@@ -42,19 +42,12 @@ int lepton3_1d[120*160];
 int seg_arr[120*160/4];
 
 void sync(void) {
-    // Initialize GPIO with BOARD numbering scheme
     wiringPiSetup();
-
-    // Set pin 8 (CS pin) as output
     pinMode(8, OUTPUT);
-
-    // Deassert chip select (set high)
     digitalWrite(8, HIGH);
 
     // Wait for 185 milliseconds
     usleep(185 * 1000);
-
-    // Reassert chip select (set low)
     digitalWrite(8, LOW);
 }
 
@@ -69,27 +62,23 @@ void adjust(int type)
 	if (type == 2)
 	{
 		//printf("Calculating min/max values for proper scaling...\n");
-		for(i=0;i<60;i++)
+		// assuming 1d array
+		for (i = 0; i < 4800; i++)
 		{
-			for(j=0;j<80;j++)
+			if ((lepton2_1d[i] > maxval) && (lepton2_1d[i] != 0))
 			{
-				if (lepton2_image[i][j] > maxval) {
-					maxval = lepton2_image[i][j];
-				}
-				if (lepton2_image[i][j] < minval) {
-					minval = lepton2_image[i][j];
-				}
+				maxval = lepton2_1d[i];
 			}
+			if ((lepton2_1d[i] < minval) && (lepton2_1d[i] != 0))
+			{
+				minval = lepton2_1d[i];
+			}
+			//printf("maxval = %u\n",maxval);
+			//printf("minval = %u\n",minval);
 		}
-		//printf("maxval = %u\n",maxval);
-		//printf("minval = %u\n",minval);
-
-		for(i=0;i<60;i++)
+		for (i = 0; i < 4800; i++)
 		{
-			for(j=0;j<80;j++)
-			{
-				lepton2_image[i][j] -= minval;
-			}
+			lepton2_1d[i] -= minval;
 		}
 	}
 	else if (type == 3)

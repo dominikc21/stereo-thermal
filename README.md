@@ -1,9 +1,9 @@
 # Stereo Imaging with Flir Leptons
 This project aims to create a device that can be used on aerial drones (nominally) or other vehicles for object detection in poor visibility conditions (fog, dust, darkness, etc.), where infrared radiation is highly visible. We achieved short-range distance measurement of detected objects up to 10 meters away, accurate to roughly within 1-2 meters. Object detection is temperature-based, meaning that a certain temperature range is selected and bounding boxes will only be drawn around objects at this temperature. 
 
-
-![alt text](https://github.com/dominikc21/stereo-thermal/images/stereo-thermal_device.heic?raw=true)
-
+<div style="text-align:center">
+  <img src="./images/stereo-thermal_device.heic" width="500">
+</div>
 
 ## Hardware
 The cameras we used in this project are the FLIR [Lepton 2.5](https://www.digikey.ca/en/products/detail/flir-lepton/500-0763-01/6250105) (60 x 80 resolution) and the [Lepton 3.5](https://www.digikey.ca/en/products/detail/flir-lepton/500-0771-01/7606616) (120 x 160). The choice not to go with both Lepton 3.5s was due to costs (~$70 CAD difference). The high-resolution camera gives a better viewing experience. Each camera was mounted on a [Lepton breakout board](https://www.digikey.ca/en/products/detail/flir-lepton/250-0577-00/10385179). We went with the Raspberry Pi 4B 8GB RAM for the computer.

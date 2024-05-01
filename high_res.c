@@ -19,7 +19,7 @@ static void pabort(const char *s)
 }
 
 static const char *lep3 = "/dev/spidev0.0";
-static uint8_t mode = SPI_MODE_3;
+static uint8_t mode;
 static uint8_t bits = 8;
 static uint32_t speed = 24000000;
 static uint16_t delayy;
@@ -28,22 +28,6 @@ static uint16_t delayy;
 uint8_t lepton_frame_packet[VOSPI_FRAME_SIZE];
 
 int lepton3_1d[120*160];
-
-void wait_frame(int ms) {
-	printf("sync\n");
-    clock_t start_time = clock();
-    //printf('start time: %s\n', typeof(clock));
-    //printf('start time + ms: %d\n', start_time+ms);
-    while (clock() < start_time + ms);
-}
-
-void sync(void) {
-    wiringPiSetup();
-    pinMode(8, OUTPUT);
-    digitalWrite(8, HIGH);
-    wait_frame(185000);
-    digitalWrite(8, LOW);
-}
 
 void adjust()
 {
@@ -64,12 +48,10 @@ void adjust()
 		{
 			minval = lepton3_1d[i];
 		}
-		//printf("maxval = %u\n",maxval);
-		//printf("minval = %u\n",minval);
 	}
 	for (i = 0; i < 19200; i++)
 	{
-		lepton3_1d[i] -= minval;
+		//lepton3_1d[i] -= minval;
 	}
 
 }
@@ -88,42 +70,62 @@ int transfer(int fd) {
 		.bits_per_word = bits,
 	};
 
-	
+	int discard = 0;
 	int segment = 1;
 	while (segment < 5)
 	{
-		//printf("segment: %d\n", segment);
 		int packet = 0;
 		while (packet < 60) 
 		{
 			ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
-			
 		
 			if (ret < 1)
 				pabort("can't send spi message");
 			
-			if ((lepton_frame_packet[0]&0xf) != 0x0f) // discard
+			if ((lepton_frame_packet[0]&0xf) != 0x0f)
 			{
-				//frame_number = ((lepton_frame_packet[0] << 8) | lepton_frame_packet[1]) & 0b0000111111111111;
 				frame_number = lepton_frame_packet[1];
-				//printf("packet: %d\n", frame_number);
 				if ((frame_number > 59))
 				{
-					sync();
+					// SYNC
+					//if (discard > 1000) {
+					
+						wiringPiSetup();
+						pinMode(1, OUTPUT);
+						digitalWrite(1, HIGH);
+						clock_t start_time = clock();
+						printf("SYNC2\n");
+						while (clock() < start_time + 200000);
+						digitalWrite(1, LOW);
+					
+					//}
+					discard ++;
+					
 					packet = 0;
 					continue;
 				}
 				
 				if ((frame_number == 20) && ((lepton_frame_packet[0] >> 4) != segment))
 				{
-					//printf("segment: %d\n", lepton_frame_packet[0] >> 4);
-					sync();
+					
+					//if (discard > 1000) {
+					/*
+						wiringPiSetup();
+						pinMode(1, OUTPUT);
+						digitalWrite(1, HIGH);
+						clock_t start_time = clock();
+						printf("SYNC2\n");
+						while (clock() < start_time + 200000);
+						digitalWrite(1, LOW);
+					*/
+					//}
+					discard ++;
+					
 					packet = 0;
 					continue;
 				}
 				if (packet == frame_number)
 				{
-					//printf("packet: %d\n", packet);
 					for(int i=0;i<80;i++)
 					{
 						lepton3_1d[i + packet*80 + (segment-1)*4800] = ((lepton_frame_packet[2*i+4] << 8 | lepton_frame_packet[2*i+5]) >> 2);
@@ -131,6 +133,26 @@ int transfer(int fd) {
 
 					packet ++;
 					
+				}
+			}
+			else
+			{
+				discard ++;
+				
+				if (discard > 20000)
+				{
+					// RESET
+					
+					wiringPiSetup();
+				    pinMode(4, OUTPUT);
+					digitalWrite(4, LOW);
+					clock_t start_time = clock();
+					printf("RESET2\n");
+					while (clock() < start_time + 100000);
+					digitalWrite(4, HIGH);
+					while (clock() < start_time + 6000000);
+					
+					return 1;
 				}
 			}
 		}
@@ -184,7 +206,7 @@ void check(int fd) {
 		pabort("can't get max speed hz");
 	}
 
-	printf("spi mode: %d\n", mode);
+	//printf("spi mode: %d\n", mode);
 	//printf("bits per word: %d\n", bits);
 	//printf("max speed: %d Hz (%d MHz)\n", speed, speed/1000000);
 } 
@@ -192,11 +214,12 @@ void check(int fd) {
 int *lepton3(void) {
 	int ret = 0;
 	int fd;
-	
 	fd = open(lep3, O_RDWR);
+	
+	while (transfer(fd) != 0);
 	check(fd);
 	
-	transfer(fd);
+	//transfer(fd);
 	
 	close(fd);
 	adjust();

@@ -2,7 +2,7 @@
 This project aims to create a device that can be used on aerial drones (nominally) or other vehicles for object detection in poor visibility conditions (fog, dust, darkness, etc.), where infrared radiation is highly visible. We achieved short-range distance measurement of detected objects up to 10 meters away, accurate to roughly within 1-2 meters. Object detection is temperature-based, meaning that a certain temperature range is selected and bounding boxes will only be drawn around objects at this temperature. 
 
 <div style="text-align:center">
-  <img src="./images/stereo-thermal_device.heic" width="500">
+  <img src="./images/stereo-thermal_device.png" width="500">
 </div>
 
 ## Hardware

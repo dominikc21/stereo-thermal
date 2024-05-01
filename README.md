@@ -14,5 +14,5 @@ The VoSPI (Video over SPI) protocol is used to gather frames in the RAW14 format
 ## Guide
 
 
-![alt text](https://github.com/dominikc21/stereo-thermal/images/detailed_wiring_diagram.png)
+![alt text](./images/detailed_wiring_diagram.png)
 

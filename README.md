@@ -13,6 +13,6 @@ The VoSPI (Video over SPI) protocol is used to gather frames in the RAW14 format
 
 ## Guide
 
-
-<img src="./images/detailed_wiring_diagram.png" width="200">
-
+<div style="text-align:center;">
+  <img src="./images/detailed_wiring_diagram.png" width="500">
+</div>

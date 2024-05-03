@@ -20,8 +20,8 @@ The VoSPI (Video over SPI) protocol is used to gather frames in the RAW14 format
 Wire the cameras to the Raspberry Pi following the diagram above, and clone the repository. Compile `high_res.c` and `low_res.c` into shared files: `gcc -fPIC -shared -o high_res.so high_res.c -lWiringpi` in the same directory. To run the program, run `python stereo_video_threading.py`. The output will resemble the following image.
 
 <div style="text-align:center;">
-  <img src="images/low.jpeg" alt="alt-text-1" width="50%" />
-  <img src="images/high.jpeg" alt="alt-text-2" width="50%" style="float:right;" />
+  <img src="images/low.jpeg" alt="alt-text-1" width="40%" />
+  <img src="images/high.jpeg" alt="alt-text-2" width="40%" style="float:right;" />
 </div>
 
 
